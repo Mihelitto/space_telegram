@@ -1,5 +1,6 @@
 import requests
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
 from os import path
 
 IMAGE_FOLDER = 'images'
@@ -19,6 +20,11 @@ def fetch_spacex_last_launch(flight_number):
     for num, image_url in enumerate(image_urls):
         download_image(image_url, path.join(IMAGE_FOLDER, f'spacex{num}.jpg'))
         print(image_url)
+
+
+def get_file_extension(link):
+    file_path = unquote(urlsplit(link).path)
+    return path.splitext(file_path)[1]
 
 
 def main():
