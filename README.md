@@ -1,6 +1,6 @@
 # Космический Телеграм
 
-Телеграм бот, который получает фотографии от:
+Простейший телеграм бот, который получает фотографии из следующих источников:
 - [Astronomy Picture of the Day](https://apod.nasa.gov/apod/astropix.html)
 - [DSCOVR's Earth Polychromatic Imaging Camera (EPIC)](https://epic.gsfc.nasa.gov/)
 - [SpaceX REST API](https://github.com/r-spacex/SpaceX-API)
@@ -20,6 +20,12 @@ Python3 должен быть уже установлен.
 ```
 pip install -r requirements.txt
 ```
+Для запуска воспользуйтесь командой:
+```
+python main.py
+```
+
+
 
 ### Цель проекта
 
