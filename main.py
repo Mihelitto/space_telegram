@@ -35,6 +35,25 @@ def get_file_extension(link):
     return extension
 
 
+def fetch_random_apod_images():
+    nasa_apod_image_url = 'https://api.nasa.gov/planetary/apod'
+    images_quantity = 30
+    params = {'count': images_quantity, 'api_key': nasa_api_key}
+    response = requests.get(nasa_apod_image_url, params=params)
+    random_apods = response.json()
+    for num, apod in enumerate(random_apods, 1):
+        try:
+            image_url = apod['hdurl']
+        except KeyError:
+            print('Не удалось получить ссылку на фотографию.')
+            print(apod)
+            continue
+        file_extension = get_file_extension(image_url)
+        image_name = f'nasa{num}{file_extension}'
+        download_image(image_url, path.join(image_folder, image_name))
+        print(image_url)
+
+
 def fetch_last_epic_images():
     params = {'api_key': nasa_api_key}
     epic_images_url = f'https://api.nasa.gov/EPIC/api/natural/images'
@@ -59,25 +78,9 @@ def get_epic_image_name_and_url(image):
 def main():
     Path(image_folder).mkdir(parents=True, exist_ok=True)
 
+    fetch_random_apod_images()
+    exit()
     fetch_last_epic_images()
-
-    nasa_image_url = 'https://api.nasa.gov/planetary/apod'
-    params = {'count': 30, 'api_key': nasa_api_key}
-    response = requests.get(nasa_image_url, params=params)
-    random_apods = response.json()
-    for num, apod in enumerate(random_apods, 1):
-        try:
-            image_url = apod['hdurl']
-        except KeyError:
-            print('Не удалось получить ссылку на фотографию.')
-            print(apod)
-            continue
-        file_extension = get_file_extension(image_url)
-        download_image(
-            image_url,
-            path.join(image_folder, f'nasa{num}{file_extension}'),
-        )
-        print(image_url)
 
     flight_number = 107
     fetch_spacex_last_launch(flight_number)
