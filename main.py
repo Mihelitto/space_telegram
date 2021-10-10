@@ -35,21 +35,31 @@ def get_file_extension(link):
     return extension
 
 
-def main():
-    Path(image_folder).mkdir(parents=True, exist_ok=True)
-    file_extension = '.png'
+def fetch_last_epic_images():
     params = {'api_key': nasa_api_key}
     epic_images_url = f'https://api.nasa.gov/EPIC/api/natural/images'
     response = requests.get(epic_images_url, params=params)
     response.raise_for_status()
     response_payload = response.json()
-    for photo in response_payload:
-        image_date, _ = photo['date'].split()
-        image_date = datetime.fromisoformat(image_date).date()
-        image_name = photo['image']
-        file_image_name = f'{image_name}{file_extension}'
-        epic_image_url = f'https://api.nasa.gov/EPIC/archive/natural/{image_date.year}/{image_date.month:02d}/{image_date.day:02d}/png/{image_name}.png?api_key={"DEMO_KEY"}'
+    for image in response_payload:
+        file_image_name, epic_image_url = get_epic_image_name_and_url(image)
         download_image(epic_image_url, path.join(image_folder, file_image_name), params)
+
+
+def get_epic_image_name_and_url(image):
+    file_extension = '.png'
+    image_date, _ = image['date'].split()
+    image_date = datetime.fromisoformat(image_date).date()
+    image_name = image['image']
+    epic_image_name = f'{image_name}{file_extension}'
+    epic_image_url = f'https://api.nasa.gov/EPIC/archive/natural/{image_date.year}/{image_date.month:02d}/{image_date.day:02d}/png/{image_name}.png?api_key={nasa_api_key}'
+    return epic_image_name, epic_image_url
+
+
+def main():
+    Path(image_folder).mkdir(parents=True, exist_ok=True)
+
+    fetch_last_epic_images()
 
     nasa_image_url = 'https://api.nasa.gov/planetary/apod'
     params = {'count': 30, 'api_key': nasa_api_key}
