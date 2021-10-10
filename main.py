@@ -13,6 +13,7 @@ env = Env()
 env.read_env()
 
 image_folder = env.str('IMAGE_FOLDER', default='images')
+nasa_api_key = env.str('NASA_API_KEY', default='DEMO_KEY')
 tg_bot_token = env.str('TG_BOT_TOKEN')
 tg_channel_id = env.str('TG_CHANNEL_ID')
 
@@ -22,19 +23,19 @@ def main():
     flight_number = 107
 
     try:
-        fetch_random_apod_images()
-        fetch_last_epic_images()
+        fetch_random_apod_images(image_folder, nasa_api_key)
+        fetch_last_epic_images(image_folder, nasa_api_key)
     except requests.exceptions.ConnectionError:
-        print("Сайт nasa не отвечает.")
+        print('Сайт nasa не отвечает.')
     except requests.exceptions.HTTPError:
-        print("Ошибка! Не удалось получить список фотографий от nasa")
+        print('Ошибка! Не удалось получить список фотографий от nasa')
 
     try:
-        fetch_spacex_launch(flight_number)
+        fetch_spacex_launch(flight_number, image_folder)
     except requests.exceptions.ConnectionError:
-        print("Сайт spacex не отвечает.")
+        print('Сайт spacex не отвечает.')
     except requests.exceptions.HTTPError:
-        print("Ошибка! Не удалось получить список фотографий от spacex")
+        print('Ошибка! Не удалось получить список фотографий от spacex')
 
     image_names = listdir(image_folder)
     bot = telegram.Bot(token=tg_bot_token)
