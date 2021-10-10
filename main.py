@@ -1,16 +1,22 @@
 from datetime import datetime
+from time import sleep
 
 import requests
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 from os import path
+from os import listdir
+import random
 from environs import Env
+import telegram
 
 env = Env()
 env.read_env()
 
 image_folder = env.str('IMAGE_FOLDER', default='images')
 nasa_api_key = env.str('NASA_API_KEY', default='DEMO_KEY')
+tg_bot_token = env.str('TG_BOT_TOKEN')
+tg_channel_id = env.str('TG_CHANNEL_ID')
 
 
 def download_image(image_url, image_name, params=None):
@@ -106,6 +112,20 @@ def main():
         print("Сайт spacex не отвечает.")
     except requests.exceptions.HTTPError:
         print("Ошибка! Не удалось получить список фотографий от spacex")
+
+    image_names = listdir(image_folder)
+    bot = telegram.Bot(token=tg_bot_token)
+
+    while True:
+        image_name = random.choice(image_names)
+        image_names.remove(image_name)
+
+        if not image_names:
+            break
+
+        with open(path.join(image_folder, image_name), 'rb') as image:
+            bot.send_document(chat_id=tg_channel_id, document=image)
+        sleep(60*60*24)
 
 
 if __name__ == '__main__':
