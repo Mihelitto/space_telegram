@@ -15,6 +15,7 @@ nasa_api_key = env.str('NASA_API_KEY', default='DEMO_KEY')
 
 def download_image(image_url, image_name, params=None):
     response = requests.get(image_url, params=params)
+    response.raise_for_status()
     with open(image_name, 'bw') as file:
         file.write(response.content)
 
@@ -22,11 +23,15 @@ def download_image(image_url, image_name, params=None):
 def fetch_spacex_last_launch(flight_number):
     url = f'https://api.spacexdata.com/v3/launches/{flight_number}'
     response = requests.get(url)
+    response.raise_for_status()
     launch = response.json()
     image_urls = launch["links"]["flickr_images"]
     for num, image_url in enumerate(image_urls):
-        download_image(image_url, path.join(image_folder, f'spacex{num}.jpg'))
-        print(image_url)
+        try:
+            download_image(image_url, path.join(image_folder, f'spacex{num}.jpg'))
+            print(image_url, 'Загружена')
+        except requests.exceptions.HTTPError:
+            print("Ошибка! Не удалось загрузить фотографию:", url)
 
 
 def get_file_extension(link):
@@ -40,6 +45,7 @@ def fetch_random_apod_images():
     images_quantity = 30
     params = {'count': images_quantity, 'api_key': nasa_api_key}
     response = requests.get(nasa_apod_image_url, params=params)
+    response.raise_for_status()
     random_apods = response.json()
     for num, apod in enumerate(random_apods, 1):
         try:
@@ -50,8 +56,11 @@ def fetch_random_apod_images():
             continue
         file_extension = get_file_extension(image_url)
         image_name = f'nasa{num}{file_extension}'
-        download_image(image_url, path.join(image_folder, image_name))
-        print(image_url)
+        try:
+            download_image(image_url, path.join(image_folder, image_name))
+            print(image_url, 'Загружена')
+        except requests.exceptions.HTTPError:
+            print("Ошибка! Не удалось загрузить фотографию:", image_url)
 
 
 def fetch_last_epic_images():
@@ -62,7 +71,11 @@ def fetch_last_epic_images():
     response_payload = response.json()
     for image in response_payload:
         file_image_name, epic_image_url = get_epic_image_name_and_url(image)
-        download_image(epic_image_url, path.join(image_folder, file_image_name), params)
+        try:
+            download_image(epic_image_url, path.join(image_folder, file_image_name), params)
+            print(epic_image_url, 'Загружена')
+        except requests.exceptions.HTTPError:
+            print("Ошибка! Не удалось загрузить фотографию:", epic_image_url)
 
 
 def get_epic_image_name_and_url(image):
@@ -77,13 +90,22 @@ def get_epic_image_name_and_url(image):
 
 def main():
     Path(image_folder).mkdir(parents=True, exist_ok=True)
-
-    fetch_random_apod_images()
-    exit()
-    fetch_last_epic_images()
-
     flight_number = 107
-    fetch_spacex_last_launch(flight_number)
+
+    try:
+        fetch_random_apod_images()
+        fetch_last_epic_images()
+    except requests.exceptions.ConnectionError:
+        print("Сайт nasa не отвечает.")
+    except requests.exceptions.HTTPError:
+        print("Ошибка! Не удалось получить список фотографий от nasa")
+
+    try:
+        fetch_spacex_last_launch(flight_number)
+    except requests.exceptions.ConnectionError:
+        print("Сайт spacex не отвечает.")
+    except requests.exceptions.HTTPError:
+        print("Ошибка! Не удалось получить список фотографий от spacex")
 
 
 if __name__ == '__main__':
