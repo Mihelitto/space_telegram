@@ -1,11 +1,13 @@
-from time import sleep
-from pathlib import Path
-from os import path
-from os import listdir
 import random
+from os import listdir
+from os import path
+from pathlib import Path
+from time import sleep
+
 import requests
-from environs import Env
 import telegram
+from environs import Env
+
 from fetch_nasa import fetch_last_epic_images, fetch_random_apod_images
 from fetch_spacex import fetch_spacex_launch
 

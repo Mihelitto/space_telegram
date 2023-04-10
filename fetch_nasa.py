@@ -1,7 +1,9 @@
-from os import path
 from datetime import datetime
+from os import path
+
 import requests
-from utils import download_image, get_file_extension
+
+from file_utils import download_image, get_file_extension
 
 
 def fetch_random_apod_images(image_folder, nasa_api_key):

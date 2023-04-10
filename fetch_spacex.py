@@ -1,6 +1,8 @@
 from os import path
+
 import requests
-from utils import download_image
+
+from file_utils import download_image
 
 
 def fetch_spacex_launch(flight_number, image_folder):
