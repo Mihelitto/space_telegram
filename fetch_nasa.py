@@ -47,8 +47,8 @@ def fetch_last_epic_images(image_folder, nasa_api_key):
 def get_epic_image_name_and_url(image):
     file_extension = '.png'
     image_date, _ = image['date'].split()
-    image_date = datetime.fromisoformat(image_date).date()
+    image_date = datetime.fromisoformat(image_date).date().strftime("%Y/%m/%d")
     image_name = image['image']
     image_name = f'{image_name}{file_extension}'
-    image_url = f'https://api.nasa.gov/EPIC/archive/natural/{image_date.year}/{image_date.month:02d}/{image_date.day:02d}/png/{image_name}'
+    image_url = f'https://api.nasa.gov/EPIC/archive/natural/{image_date}/png/{image_name}'
     return image_name, image_url
