@@ -14,6 +14,5 @@ def fetch_spacex_launch(flight_number, image_folder):
     for num, image_url in enumerate(image_urls):
         try:
             download_image(image_url, path.join(image_folder, f'spacex{num}.jpg'))
-            print(image_url, 'Загружена')
         except requests.exceptions.HTTPError:
             print('Ошибка! Не удалось загрузить фотографию:', url)

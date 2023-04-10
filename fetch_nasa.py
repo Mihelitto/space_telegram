@@ -24,7 +24,6 @@ def fetch_random_apod_images(image_folder, nasa_api_key):
         image_name = f'nasa{num}{file_extension}'
         try:
             download_image(image_url, path.join(image_folder, image_name))
-            print(image_url, 'Загружена')
         except requests.exceptions.HTTPError:
             print('Ошибка! Не удалось загрузить фотографию:', image_url)
 
@@ -39,7 +38,6 @@ def fetch_last_epic_images(image_folder, nasa_api_key):
         file_image_name, epic_image_url = get_epic_image_name_and_url(image)
         try:
             download_image(epic_image_url, path.join(image_folder, file_image_name), params)
-            print(epic_image_url, 'Загружена')
         except requests.exceptions.HTTPError:
             print('Ошибка! Не удалось загрузить фотографию:', epic_image_url)
 
