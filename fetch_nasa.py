@@ -14,11 +14,8 @@ def fetch_random_apod_images(image_folder, nasa_api_key):
     response.raise_for_status()
     random_apods = response.json()
     for num, apod in enumerate(random_apods, 1):
-        try:
-            image_url = apod['hdurl']
-        except KeyError:
-            print('Не удалось получить ссылку на фотографию.')
-            print(apod)
+        image_url = apod.get('hdurl')
+        if not image_url:
             continue
         file_extension = get_file_extension(image_url)
         image_name = f'nasa{num}{file_extension}'

@@ -12,10 +12,7 @@ from fetch_nasa import fetch_last_epic_images, fetch_random_apod_images
 from fetch_spacex import fetch_spacex_launch
 
 
-def upload_image(tg_bot_token, tg_channel_id, image_folder, image_names):
-    image_name = random.choice(image_names)
-    image_names.remove(image_name)
-
+def upload_image(tg_bot_token, tg_channel_id, image_folder, image_name):
     bot = telegram.Bot(token=tg_bot_token)
     with open(path.join(image_folder, image_name), 'rb') as image:
         bot.send_document(chat_id=tg_channel_id, document=image)
@@ -29,6 +26,8 @@ def main():
     nasa_api_key = env.str('NASA_API_KEY', default='DEMO_KEY')
     tg_bot_token = env.str('TG_BOT_TOKEN')
     tg_channel_id = env.str('TG_CHANNEL_ID')
+
+    seconds_in_day = 86400
 
     Path(image_folder).mkdir(parents=True, exist_ok=True)
     flight_number = 107
@@ -53,9 +52,11 @@ def main():
     while True:
         if not image_names:
             break
+        image_name = random.choice(image_names)
+        image_names.remove(image_name)
 
-        upload_image(tg_bot_token, tg_channel_id, image_folder, image_names)
-        sleep(60*60*24)
+        upload_image(tg_bot_token, tg_channel_id, image_folder, image_name)
+        sleep(seconds_in_day)
 
 
 if __name__ == '__main__':
